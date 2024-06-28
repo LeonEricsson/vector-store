@@ -4,13 +4,15 @@ from documents import document
 from storage import VectorStorage
 
 
-model = SentenceTransformer('sentence-transformers/all-MiniLM-L12-v2')
+model = SentenceTransformer("mixedbread-ai/mxbai-embed-large-v1", truncate_dim=512)
 
 docs = document.split('\n')
 print(f"Building vectorstore for {len(docs)} documents...")
 print()
 
-vs = VectorStorage(embedder=model)
+query_prefix = 'Represent this sentence for searching relevant passages: '
+
+vs = VectorStorage(embedder=model, query_prefix=query_prefix)
 
 vs.index(docs)
 

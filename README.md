@@ -9,7 +9,9 @@ python3 test.py
 
 so, does it scale? no. 
 
-<img src="/data/img.png" width="50%">
+<div align="center">
+  <img src="/data/img.png" width="50%">
+</div>
 
 but if your application doesn't need more than a couple hundred thousand entries, why make things more
 complicated than they needs to be? 

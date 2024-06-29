@@ -1,5 +1,6 @@
 import numpy as np
 from enum import Enum
+import faiss
 
 from jaxtyping import Float
 from typing import List
@@ -42,3 +43,18 @@ class VectorStorage:
         row_indices = np.arange(similarities.shape[0])[:, np.newaxis]
         return top_k_indices, similarities[row_indices, top_k_indices]
 
+    def index_faiss(self, vectors: np.ndarray):
+        d = vectors.shape[1]  # dimension of vectors
+        
+        index = faiss.IndexFlatIP(d) 
+        faiss.normalize_L2(vectors)  
+        
+        index.add(vectors)
+        self.faiss_index = index
+
+    def search_faiss(self, queries: np.ndarray, k: int):
+        faiss.normalize_L2(queries)
+        
+        similarities, top_k_indices = self.faiss_index.search(queries.astype('float32'), k)
+        
+        return top_k_indices, similarities

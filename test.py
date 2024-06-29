@@ -1,6 +1,6 @@
 import timeit
 from sentence_transformers import SentenceTransformer
-from documents import document
+from data.paulgraham import document
 from storage import VectorStorage
 
 
@@ -16,7 +16,7 @@ vs = VectorStorage(embedder=model, query_prefix=query_prefix)
 
 vs.index(docs)
 
-query = "What did emma do in this story?"
+query = "What was the most popular forum before Reddit?"
 
 run_search = lambda query: vs.search_top_k([query], k=3)
 

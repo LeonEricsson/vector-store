@@ -1,7 +1,6 @@
 import numpy as np
 from enum import Enum
 
-from jaxtyping import Float
 from typing import List
 
 class SimilarityMetric(Enum):
@@ -9,7 +8,7 @@ class SimilarityMetric(Enum):
     EUCLIDEAN = 1
     MANHATTAN = 2
 
-def cosine_similarity(x, y) -> Float:
+def cosine_similarity(x, y):
     x_norm = x / np.linalg.norm(x, axis=1, keepdims=True)
     y_norm = y / np.linalg.norm(y, axis=1, keepdims=True)
     return x_norm @ y_norm.T
@@ -27,18 +26,25 @@ class VectorStorage:
         self.embedder = embedder
         self.similarity = sims[similarity.value]
         self.query_prefix = query_prefix
-    
+
     def index(self, docs: List[str]):
-        self.index = self.embedder.encode(docs)
-
+        """
+        Add documents to the index by encoding them with the embedder.
+        """
+        new_embeddings = self._embedder.encode(docs)
+        self._index = np.concatenate([self._index, new_embeddings])
+    
     def search_top_k(self, queries: List[str], k: int = 10):
-        """Batched search for top k similar documents to each query."""
-        queries = [self.query_prefix + query for query in queries]
-        query_embeddings = self.embedder.encode(queries)
-        similarities = self.similarity(query_embeddings, self.index)
+        """Batched search for top k similar entries in index."""
+        queries = [self._query_prefix + query for query in queries]
+        query_embeddings = self._embedder.encode(queries)
+        similarities = self._similarity_fn(query_embeddings, self._index)
 
-        top_k_indices = np.apply_along_axis(lambda x: np.argsort(x)[-k:][::-1], 1, similarities)
+        def top_k_partitioned(x):
+            partitioned = np.argpartition(x, -k)[-k:]
+            return partitioned[np.argsort(x[partitioned])][::-1]
+
+        top_k_indices = np.apply_along_axis(top_k_partitioned, 1, similarities)
 
         row_indices = np.arange(similarities.shape[0])[:, np.newaxis]
         return top_k_indices, similarities[row_indices, top_k_indices]
-    

@@ -64,6 +64,7 @@ class VectorStorage:
         new_embeddings = self._embedder.encode(docs)
         self._index = np.concatenate([self._index, new_embeddings])
 
+
     def search_top_k(self, queries: List[str], k: int = 10):
         """Batched search for top k similar entries in index."""
         queries = [self._query_prefix + query for query in queries]
@@ -78,6 +79,7 @@ class VectorStorage:
 
         row_indices = np.arange(similarities.shape[0])[:, np.newaxis]
         return top_k_indices, similarities[row_indices, top_k_indices]
+    
 
     def __getstate__(self):
         """Custom method to define what gets pickled."""
@@ -86,11 +88,13 @@ class VectorStorage:
             del state["_embedder"]
         return state
 
+
     def __setstate__(self, state):
         """Custom method to define how the object is reconstructed when unpickled."""
         self.__dict__.update(state)
         if "_save_embedder" not in state or not state["_save_embedder"]:
             self._embedder = None
+
 
     def set_embedder(self, embedder):
         """Method to set the embedder after unpickling if it wasn't saved."""

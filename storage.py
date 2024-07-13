@@ -28,6 +28,12 @@ sims = [cosine_similarity, euclidean_similarity, manhattan_similarity]
 
 
 class VectorStorage:
+    """
+    A class for efficient storage and retrieval of vector embeddings.
+
+    VectorStorage indexes documents using their vector representations and 
+    provides fast similarity search functionality.
+    """
     def __init__(
         self,
         embedder,
@@ -35,6 +41,15 @@ class VectorStorage:
         query_prefix="",
         save_embedder=False,
     ):
+        """
+        Initialize the VectorStorage.
+
+        Args:
+            embedder: Object with encode method and truncate_dim attribute.
+            similarity: Similarity metric for comparing embeddings.
+            query_prefix: Prefix added to queries before encoding.
+            save_embedder: If True, save embedder when pickling.
+        """
         self._embedder = embedder
         self._similarity_fn = sims[similarity.value]
         self._query_prefix = query_prefix

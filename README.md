@@ -14,5 +14,5 @@ so, does it scale? no.
 </div>
 
 but if your application doesn't need more than a couple hundred thousand entries, why make things more
-complicated than they needs to be? 
+complicated than they need to be? 
 
